@@ -2,7 +2,7 @@ use gdnative::prelude::*;
 use godot_logger::GodotLogger;
 use log::{Level, LevelFilter};
 
-use crate::actors::Player;
+use crate::actors::{Enemy, Player};
 
 mod actors;
 
@@ -20,6 +20,7 @@ fn init(handle: InitHandle) {
         log::debug!("Initialized godot-logger");
     }
 
+    handle.add_class::<Enemy>();
     handle.add_class::<Player>();
 }
 
