@@ -1,45 +1,19 @@
-use std::fmt::{Display, Formatter};
+use std::f64::consts::FRAC_PI_4;
 
 use gdnative::prelude::*;
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default, NativeClass)]
-#[inherit(KinematicBody2D)]
-pub struct Actor;
+pub trait Actor {
+    fn physics_process(&mut self, owner: &KinematicBody2D, _delta: f32) {
+        let horizontal_movement: Vector2 = Vector2::new(300.0, 0.0);
+        let vertical_movement: Vector2 = Vector2::ZERO;
 
-impl Actor {
-    pub fn new(_base: &KinematicBody2D) -> Self {
-        Actor
-    }
-}
-
-#[methods]
-impl Actor {}
-
-impl Display for Actor {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Actor")
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn trait_send() {
-        fn assert_send<T: Send>() {}
-        assert_send::<Actor>();
-    }
-
-    #[test]
-    fn trait_sync() {
-        fn assert_sync<T: Sync>() {}
-        assert_sync::<Actor>();
-    }
-
-    #[test]
-    fn trait_unpin() {
-        fn assert_unpin<T: Unpin>() {}
-        assert_unpin::<Actor>();
+        owner.move_and_slide(
+            horizontal_movement,
+            vertical_movement,
+            false,
+            4,
+            FRAC_PI_4,
+            false,
+        );
     }
 }
