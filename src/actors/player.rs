@@ -5,36 +5,64 @@ use gdnative::prelude::*;
 
 use crate::actors::Actor;
 
-const GRAVITY: f32 = 1000.0;
+const FLOOR_NORMAL: Vector2 = Vector2::UP;
 
 #[derive(Copy, Clone, PartialEq, Debug, Default, NativeClass)]
 #[inherit(KinematicBody2D)]
 pub struct Player {
     #[property]
+    gravity: f32,
+
+    #[property]
     speed: f32,
+
     velocity: Vector2,
 }
 
 impl Player {
     pub fn new(_base: &KinematicBody2D) -> Self {
         Self {
+            gravity: 1000.0,
             speed: 800.0,
             velocity: Vector2::ZERO,
         }
     }
 
-    fn calculate_direction(&self) -> Vector2 {
-        let input = Input::godot_singleton();
-
+    fn calculate_direction(&self, owner: &KinematicBody2D, input: &Input) -> Vector2 {
         let move_right_input = input.get_action_strength("move_right", false) as f32;
         let move_left_input = input.get_action_strength("move_left", false) as f32;
 
-        Vector2::new(move_right_input - move_left_input, 0.0)
+        let gravity = if input.is_action_just_pressed("jump", false) && owner.is_on_floor() {
+            -1.0
+        } else {
+            1.0
+        };
+
+        Vector2::new(move_right_input - move_left_input, gravity)
     }
 
-    fn calculate_gravity(&self, delta: f32) -> Vector2 {
-        let gravity = self.velocity.y + GRAVITY * delta;
-        Vector2::new(0.0, gravity)
+    fn calculate_velocity(
+        &mut self,
+        linear_velocity: Vector2,
+        direction: Vector2,
+        speed: Vector2,
+        input: &Input,
+        delta: f32,
+    ) -> Vector2 {
+        let x = speed.x * direction.x;
+        let mut y = linear_velocity.y + self.gravity * delta;
+
+        // Jumping
+        if direction.y < 0.0 {
+            y = speed.y * direction.y
+        }
+
+        // Interrupting the jump
+        if input.is_action_just_released("jump", false) && y < 0.0 {
+            y = 0.0;
+        }
+
+        Vector2::new(x, y)
     }
 }
 
@@ -42,13 +70,20 @@ impl Player {
 impl Player {
     #[method]
     fn _physics_process(&mut self, #[base] owner: &KinematicBody2D, delta: f32) {
-        let gravity = self.calculate_gravity(delta);
-        let direction = self.calculate_direction();
+        let input = Input::godot_singleton();
 
-        let velocity = gravity + direction * self.speed;
+        let direction = self.calculate_direction(owner, input);
+        let velocity = self.calculate_velocity(
+            self.velocity,
+            direction,
+            Vector2::new(self.speed, self.speed),
+            input,
+            delta,
+        );
+
         self.velocity = velocity;
 
-        owner.move_and_slide(velocity, Vector2::ZERO, false, 4, FRAC_PI_4, true);
+        owner.move_and_slide(velocity, FLOOR_NORMAL, false, 4, FRAC_PI_4, true);
     }
 }
 
