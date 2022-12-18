@@ -1,7 +1,7 @@
 # 👾 Godot + Rust
 
-This project is my implementation of the [Create your First 2D Game with Godot]
-[course] course by [GDQuest]. As a twist, I decided to use Rust instead of
+This project follows the [Create your First 2D Game with Godot][course] course
+by [GDQuest]. As my personal twist, the code is written with [Rust] and not
 GDScript.
 
 ## License
@@ -25,3 +25,4 @@ dual licensed as above, without any additional terms or conditions.
 [course]: https://gdquest.mavenseed.com/courses/create-your-first-2d-game-with-godot-extended-edition
 [gdquest]: https://www.gdquest.com/
 [gdquest license]: https://github.com/GDQuest/godot-beginner-2d-platformer/blob/master/LICENSE
+[rust]: https://rust-lang.org/
