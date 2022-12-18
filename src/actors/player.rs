@@ -3,9 +3,7 @@ use std::fmt::Display;
 
 use gdnative::prelude::*;
 
-use crate::actors::Actor;
-
-const FLOOR_NORMAL: Vector2 = Vector2::UP;
+use crate::actors::{Actor, FLOOR_NORMAL};
 
 #[derive(Copy, Clone, PartialEq, Debug, Default, NativeClass)]
 #[inherit(KinematicBody2D)]
@@ -81,9 +79,7 @@ impl Player {
             delta,
         );
 
-        self.velocity = velocity;
-
-        owner.move_and_slide(velocity, FLOOR_NORMAL, false, 4, FRAC_PI_4, true);
+        self.velocity = owner.move_and_slide(velocity, FLOOR_NORMAL, false, 4, FRAC_PI_4, true);
     }
 }
 
