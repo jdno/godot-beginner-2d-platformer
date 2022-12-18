@@ -1,0 +1,27 @@
+[package]
+name = "godot-beginner-2d-platformer"
+version = "0.0.0"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+
+description = """
+A 2D platformer game made with Godot Engine - based on a tutorial by GDQuest
+"""
+repository = "https://github.com/jdno/godot-beginner-2d-platformer"
+
+keywords = ["godot", "game", "tutorial"]
+categories = ["games"]
+
+# The project is built and packaged as a Godot game.
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+# See more keys and their definitions at
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gdnative = "0.11.0"
+godot-logger = "1.1.0"
+log = "0.4.17"
