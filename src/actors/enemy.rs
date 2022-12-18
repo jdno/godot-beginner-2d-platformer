@@ -30,7 +30,11 @@ impl Enemy {
 #[methods]
 impl Enemy {
     #[method]
-    fn _ready(&mut self, #[base] _base: &KinematicBody2D) {
+    fn _ready(&mut self, #[base] base: &KinematicBody2D) {
+        // Do not move enemy until it is visible
+        base.set_physics_process(false);
+
+        // Move the enemy leftwards towards the player
         self.velocity.x = -self.speed
     }
 
