@@ -14,6 +14,9 @@ pub struct Player {
     #[property]
     speed: f32,
 
+    #[property]
+    stomp_impulse: f32,
+
     velocity: Vector2,
 }
 
@@ -22,6 +25,7 @@ impl Player {
         Self {
             gravity: 1000.0,
             speed: 800.0,
+            stomp_impulse: 500.0,
             velocity: Vector2::ZERO,
         }
     }
@@ -39,16 +43,15 @@ impl Player {
         Vector2::new(move_right_input - move_left_input, gravity)
     }
 
-    fn calculate_velocity(
+    fn calculate_move_velocity(
         &mut self,
-        linear_velocity: Vector2,
         direction: Vector2,
         speed: Vector2,
         input: &Input,
         delta: f32,
     ) -> Vector2 {
         let x = speed.x * direction.x;
-        let mut y = linear_velocity.y + self.gravity * delta;
+        let mut y = self.velocity.y + self.gravity * delta;
 
         // Jumping
         if direction.y < 0.0 {
@@ -62,6 +65,13 @@ impl Player {
 
         Vector2::new(x, y)
     }
+
+    fn calculate_stomp_velocity(&self) -> Vector2 {
+        let x = self.velocity.x;
+        let y = -self.stomp_impulse;
+
+        Vector2::new(x, y)
+    }
 }
 
 #[methods]
@@ -71,8 +81,7 @@ impl Player {
         let input = Input::godot_singleton();
 
         let direction = self.calculate_direction(owner, input);
-        let velocity = self.calculate_velocity(
-            self.velocity,
+        let velocity = self.calculate_move_velocity(
             direction,
             Vector2::new(self.speed, self.speed),
             input,
@@ -80,6 +89,16 @@ impl Player {
         );
 
         self.velocity = owner.move_and_slide(velocity, FLOOR_NORMAL, false, 4, FRAC_PI_4, true);
+    }
+
+    #[method]
+    fn on_enemy_detector_area_entered(&mut self, #[base] _owner: &KinematicBody2D, _area: Variant) {
+        self.velocity = self.calculate_stomp_velocity();
+    }
+
+    #[method]
+    fn on_enemy_detector_body_entered(&mut self, #[base] owner: &KinematicBody2D, _body: Variant) {
+        owner.queue_free();
     }
 }
 
