@@ -1,0 +1,6 @@
+[gd_resource type="GDNativeLibrary" format=2]
+
+[resource]
+reloadable = false
+entry/OSX.64 = "res://libraries/libgodot_beginner_2d_platformer.dylib"
+dependency/OSX.64 = [  ]
