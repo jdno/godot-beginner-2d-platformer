@@ -2,6 +2,8 @@ use std::fmt::Display;
 
 use gdnative::prelude::*;
 
+use crate::actors::Actor;
+
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default, NativeClass)]
 #[inherit(KinematicBody2D)]
 pub struct Player;
@@ -13,7 +15,14 @@ impl Player {
 }
 
 #[methods]
-impl Player {}
+impl Player {
+    #[method]
+    fn _physics_process(&mut self, #[base] owner: &KinematicBody2D, delta: f32) {
+        self.physics_process(owner, delta);
+    }
+}
+
+impl Actor for Player {}
 
 impl Display for Player {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
