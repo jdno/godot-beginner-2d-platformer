@@ -1,6 +1,7 @@
 use std::f64::consts::FRAC_PI_4;
 use std::fmt::Display;
 
+use gdnative::api::{CollisionShape2D, PhysicsBody2D};
 use gdnative::prelude::*;
 
 use crate::actors::FLOOR_NORMAL;
@@ -49,6 +50,27 @@ impl Enemy {
         self.velocity.y = owner
             .move_and_slide(self.velocity, FLOOR_NORMAL, false, 4, FRAC_PI_4, true)
             .y;
+    }
+
+    #[method]
+    fn on_stomp_detector_body_entered(&mut self, #[base] owner: &KinematicBody2D, body: Variant) {
+        let body = unsafe { body.try_to_object::<PhysicsBody2D>().unwrap().assume_safe() };
+
+        if body.global_position().y > owner.global_position().y {
+            return;
+        }
+
+        let collision_shape = unsafe {
+            owner
+                .get_node("CollisionShape2D")
+                .unwrap()
+                .assume_safe()
+                .cast::<CollisionShape2D>()
+                .unwrap()
+        };
+        collision_shape.set_deferred("disabled", true);
+
+        owner.queue_free();
     }
 }
 
