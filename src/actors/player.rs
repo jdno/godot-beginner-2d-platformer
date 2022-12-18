@@ -4,13 +4,17 @@ use gdnative::prelude::*;
 
 use crate::actors::Actor;
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default, NativeClass)]
+#[derive(Copy, Clone, PartialEq, Debug, Default, NativeClass)]
 #[inherit(KinematicBody2D)]
-pub struct Player;
+pub struct Player {
+    velocity: Vector2,
+}
 
 impl Player {
     pub fn new(_base: &KinematicBody2D) -> Self {
-        Player
+        Self {
+            velocity: Vector2::ZERO,
+        }
     }
 }
 
@@ -22,7 +26,15 @@ impl Player {
     }
 }
 
-impl Actor for Player {}
+impl Actor for Player {
+    fn velocity(&self) -> &Vector2 {
+        &self.velocity
+    }
+
+    fn set_velocity(&mut self, velocity: Vector2) {
+        self.velocity = velocity;
+    }
+}
 
 impl Display for Player {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
