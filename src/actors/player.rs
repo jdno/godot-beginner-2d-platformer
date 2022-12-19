@@ -1,4 +1,4 @@
-use std::f64::consts::FRAC_PI_4;
+use std::f64::consts::FRAC_PI_2;
 use std::fmt::Display;
 
 use gdnative::prelude::*;
@@ -88,7 +88,22 @@ impl Player {
             delta,
         );
 
-        self.velocity = owner.move_and_slide(velocity, FLOOR_NORMAL, false, 4, FRAC_PI_4, true);
+        // Deactivate snapping when the player is jumping
+        let snap_vector = if direction.y >= 0.0 {
+            Vector2::DOWN * 50.0
+        } else {
+            Vector2::ZERO
+        };
+
+        self.velocity = owner.move_and_slide_with_snap(
+            velocity,
+            snap_vector,
+            FLOOR_NORMAL,
+            true,
+            4,
+            FRAC_PI_2,
+            true,
+        );
     }
 
     #[method]
